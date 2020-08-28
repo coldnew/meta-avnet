@@ -1,0 +1,17 @@
+# This is a boot script for U-Boot
+# Generate boot.scr:
+# mkimage -c none -A arm -T script -d boot.cmd.default boot.scr
+#
+################
+
+# set commands to program emmc (image.ub and boot.scr) from USB
+
+setenv copy_kernel_from_usb_to_emmc "usb start && fatload usb 0:1 0x04000000 image_INITRD_FULL.ub && fatwrite mmc 1:1 '$fileaddr' fitImage '$filesize'"
+setenv copy_boot_scr_from_usb_to_emmc "usb start && fatload usb 0:1 0x04000000 avnet_emmc.scr && fatwrite mmc 1:1 '$fileaddr' boot.scr '$filesize'"
+setenv erase_boot_scrip_qspi "sf probe 0 0 0 && sf erase '$script_offset_f' '$script_size_f'"
+
+# boot from qspi
+
+sf probe 0 0 0
+sf read 0x04000000 0x300000 0xcc0000
+bootm 0x04000000
